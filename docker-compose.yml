@@ -1,0 +1,13 @@
+version: '3.4'
+
+services:
+
+  shorts_app:
+    image: shorts-main:latest
+    container_name: shorts_app
+    ports:
+      - 8000:8000
+
+  shorts_redis:
+    image: redis:6.2.5-alpine
+    container_name: shorts_redis
