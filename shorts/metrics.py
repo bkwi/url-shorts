@@ -2,6 +2,7 @@ import time
 import asyncio
 from datetime import datetime
 
+from aiohttp import ClientTimeout
 from pydantic import BaseModel, Field
 from influxdb.line_protocol import make_line
 
@@ -13,10 +14,8 @@ async def metrics_consumer(redis, http):
     last_sent = time.time()
     while True:
         try:
-            dataline = await redis.rpop(config.REDIS_METRICS_QUEUE)
-
-            if dataline:
-                datalines.append(dataline)
+            if dataline := await redis.rpop(config.REDIS_METRICS_QUEUE):
+                datalines.append(dataline.decode())
             else:
                 await asyncio.sleep(1)
 
@@ -30,13 +29,29 @@ async def metrics_consumer(redis, http):
         except asyncio.CancelledError:
             await send_metrics(datalines, http)
             break
+        except Exception as e:
+            print('Something went wrong', e)
 
 
 async def send_metrics(datalines, http):
     if not datalines:
         return
 
-    print('SEND DATALINES', datalines)
+    if not all(config.INFLUXDB_CONFIG.values()):
+        print('InfluxDB not configured')
+        return
+
+    cfg = config.INFLUXDB_CONFIG
+    params = {
+        'db': cfg['database'], 'u': cfg['username'], 'p': cfg['password']
+    }
+    url = f'http://{cfg["host"]}:{cfg["port"]}/write'
+    data = '\n'.join(datalines) + '\n'
+    try:
+        async with http.post(url, params=params, data=data, timeout=ClientTimeout(total=5)) as response:
+            response.raise_for_status()
+    except Exception as e:
+        print('Something went wrong:', e)
 
 
 def metric_timestamp():
@@ -53,23 +68,39 @@ async def add(metric_item, redis):
     await redis.lpush(config.REDIS_METRICS_QUEUE, dataline)
 
 
-class Metric(BaseModel):
-    time_str: datetime = Field(default_factory=metric_timestamp)
-
-
-class Request(Metric):
+class Request(BaseModel):
     path: str
     request_id: str
     measurement = 'requests'
+    time_str: datetime = Field(default_factory=metric_timestamp)
+
+    @property
+    def fields(self):
+        return {'request_id': self.request_id}
+
+    @property
+    def tags(self):
+        return {'path': self.path}
+
+
+class Response(BaseModel):
+    status: int
+    request_path: str
+    request_id: str
+    time_used_ms: int
+    measurement = 'responses'
+    time_str: datetime = Field(default_factory=metric_timestamp)
 
     @property
     def fields(self):
         return {
-            'path': self.path
+            'request_id': self.request_id,
+            'time_used_ms': self.time_used_ms
         }
 
     @property
     def tags(self):
         return {
-            'request_id': self.request_id
+            'status': self.status,
+            'path': self.request_path
         }

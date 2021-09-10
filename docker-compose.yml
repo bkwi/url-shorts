@@ -7,7 +7,17 @@ services:
     container_name: shorts_app
     ports:
       - 8000:8000
+    volumes:
+      - ./:/app/
 
   shorts_redis:
     image: redis:6.2.5-alpine
     container_name: shorts_redis
+
+  influxdb:
+    image: influxdb:1.8-alpine
+    container_name: shorts_influxdb
+    ports:
+      - 8086:8086
+    volumes:
+      - ./volumes/influxdb:/var/lib/influxdb/

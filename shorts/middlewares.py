@@ -1,3 +1,4 @@
+import time
 import uuid
 
 from aiohttp import web
@@ -14,6 +15,17 @@ async def metrics_middleware(request, handler):
         request.app['redis']
     )
 
+    t0 = time.time()
     response = await handler(request)
+
+    await metrics.add(
+        metrics.Response(
+            status=response.status,
+            request_path=request.path,
+            request_id=request_id,
+            time_used_ms=round((time.time() - t0) * 1000)
+        ),
+        request.app['redis']
+    )
 
     return response
