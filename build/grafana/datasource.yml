@@ -1,0 +1,14 @@
+apiVersion: 1
+
+datasources:
+  - name: shorts_influxdb_datasource
+    type: influxdb
+    access: proxy
+    orgId: 1
+    uid: influxdb
+    url: http://influxdb:8086
+    user: $INFLUXDB_USERNAME
+    password: $INFLUXDB_PASSWORD
+    database: $INFLUXDB_DATABASE
+    version: 1
+    editable: false

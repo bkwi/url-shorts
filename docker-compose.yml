@@ -7,6 +7,8 @@ services:
     container_name: shorts_app
     ports:
       - 8000:8000
+    env_file:
+      - build/env
     volumes:
       - ./:/app/
 
@@ -21,3 +23,16 @@ services:
       - 8086:8086
     volumes:
       - ./volumes/influxdb:/var/lib/influxdb/
+      - ./build/influxdb:/docker-entrypoint-initdb.d
+
+  grafana:
+    image: grafana/grafana:8.1.2
+    container_name: shorts_grafana
+    ports:
+      - 3000:3000
+    env_file:
+      - build/env
+    volumes:
+      - ./volumes/grafana:/var/lib/grafana/
+      - ./build/grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./build/grafana/datasource.yml:/etc/grafana/provisioning/datasources/influxdb.yml
