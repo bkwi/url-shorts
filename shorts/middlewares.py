@@ -1,9 +1,27 @@
 import time
 import uuid
 
-from aiohttp import web
+import pydantic
+from aiohttp import web, web_exceptions
 
-from shorts import metrics
+from shorts import metrics, exceptions
+
+
+@web.middleware
+async def exception_middleware(request, handler):
+    try:
+        response = await handler(request)
+    except web_exceptions.HTTPClientError as e:
+        response = web.json_response({'error': e.text}, status=e.status_code)
+    except pydantic.error_wrappers.ValidationError as e:
+        response = web.json_response({'error': str(e)}, status=400)
+    except exceptions.AppException as e:
+        response = web.json_response({'error': e.message}, status=e.status_code)
+    except Exception as e:
+        print('Unexpected exception:', e)
+        response = web.json_response({'error': 'unexpected error'}, status=500)
+
+    return response
 
 
 @web.middleware

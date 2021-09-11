@@ -34,7 +34,8 @@ async def background_tasks(app):
 async def create_app():
     app = web.Application(
         middlewares=[
-            middlewares.metrics_middleware
+            middlewares.metrics_middleware,
+            middlewares.exception_middleware
         ]
     )
 
@@ -45,7 +46,8 @@ async def create_app():
     ])
 
     app.router.add_routes([
-        web.get('/health', handlers.healthcheck)
+        web.get('/health', handlers.healthcheck),
+        web.post('/shorten', handlers.shorten)
     ])
 
     return app
