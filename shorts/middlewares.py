@@ -17,6 +17,8 @@ async def exception_middleware(request, handler):
         response = web.json_response({'error': str(e)}, status=400)
     except exceptions.AppException as e:
         response = web.json_response({'error': e.message}, status=e.status_code)
+    except web.HTTPFound:
+        raise
     except Exception as e:
         print('Unexpected exception:', e)
         response = web.json_response({'error': 'unexpected error'}, status=500)
