@@ -19,8 +19,8 @@ async def metrics_consumer(redis, http):
             else:
                 await asyncio.sleep(1)
 
-            enough_collected = len(datalines) > 10
-            time_to_send_anyway = time.time() - last_sent > 10
+            enough_collected = len(datalines) > config.METRICS_BATCH_SIZE
+            time_to_send_anyway = time.time() - last_sent > config.METRICS_BATCH_INTERVAL
             if enough_collected or time_to_send_anyway:
                 await send_metrics(datalines, http)
                 datalines = []

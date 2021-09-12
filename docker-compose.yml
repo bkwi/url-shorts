@@ -5,6 +5,8 @@ services:
   shorts_app:
     image: shorts-main:latest
     container_name: shorts_app
+    networks:
+      - shorts
     ports:
       - 8000:8000
     env_file:
@@ -15,24 +17,42 @@ services:
   shorts_redis:
     image: redis:6.2.5-alpine
     container_name: shorts_redis
+    networks:
+      - shorts
+
+  postgres:
+    image: postgres:13.4-alpine
+    container_name: shorts_postgres
+    networks:
+      - shorts
+    env_file:
+      - build/env
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
+      - ./build/postgres/01-setup.sql:/docker-entrypoint-initdb.d/01-setup.sql:ro
 
   influxdb:
     image: influxdb:1.8-alpine
     container_name: shorts_influxdb
-    ports:
-      - 8086:8086
+    networks:
+      - shorts
     volumes:
       - ./volumes/influxdb:/var/lib/influxdb/
-      - ./build/influxdb:/docker-entrypoint-initdb.d
+      - ./build/influxdb:/docker-entrypoint-initdb.d:ro
 
   grafana:
     image: grafana/grafana:8.1.2
     container_name: shorts_grafana
+    networks:
+      - shorts
     ports:
       - 3000:3000
     env_file:
       - build/env
     volumes:
       - ./volumes/grafana:/var/lib/grafana/
-      - ./build/grafana/grafana.ini:/etc/grafana/grafana.ini
-      - ./build/grafana/datasource.yml:/etc/grafana/provisioning/datasources/influxdb.yml
+      - ./build/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
+      - ./build/grafana/datasource.yml:/etc/grafana/provisioning/datasources/influxdb.yml:ro
+
+networks:
+  shorts:

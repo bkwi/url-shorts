@@ -1,5 +1,6 @@
 import asyncio
 
+import aiopg
 from aiohttp import web, ClientSession
 from aioredis import create_redis_pool
 
@@ -13,6 +14,13 @@ async def setup_redis(app):
     yield
     app['redis'].close()
     await app['redis'].wait_closed()
+
+
+async def setup_postgres(app):
+    app['postgres'] = await aiopg.create_pool(config.POSTGRES_URI)
+    yield
+    app['postgres'].close()
+    await app['postgres'].wait_closed()
 
 
 async def http_client(app):
@@ -41,6 +49,7 @@ async def create_app():
 
     app.cleanup_ctx.extend([
         setup_redis,
+        setup_postgres,
         http_client,
         background_tasks
     ])

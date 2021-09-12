@@ -1,0 +1,5 @@
+POSTGRES_HOST=postgres_test
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+
+REDIS_HOST=shorts_redis_test

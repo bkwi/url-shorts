@@ -1,0 +1,37 @@
+version: '3.4'
+
+services:
+
+  shorts_app_test:
+    image: shorts-main:latest
+    container_name: shorts_app_test
+    networks:
+      - shorts-test
+    env_file:
+      - build/test_env
+    volumes:
+      - ./:/app/
+    entrypoint: ["/bin/bash","-c"]
+    command:
+      - |
+        ./build/check_psql.sh
+        tail -f /dev/null
+
+  shorts_redis_test:
+    image: redis:6.2.5-alpine
+    container_name: shorts_redis_test
+    networks:
+      - shorts-test
+
+  postgres_test:
+    image: postgres:13.4-alpine
+    container_name: shorts_postgres_test
+    networks:
+      - shorts-test
+    env_file:
+      - build/test_env
+    volumes:
+      - ./build/postgres/01-setup.sql:/docker-entrypoint-initdb.d/01-setup.sql:ro
+
+networks:
+  shorts-test:

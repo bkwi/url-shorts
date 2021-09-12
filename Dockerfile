@@ -4,6 +4,7 @@ ENV PROJECT_DIR=/app
 ENV PYTHONPATH /app
 
 RUN apt update && apt -y upgrade
+RUN apt install -y postgresql-client
 
 WORKDIR $PROJECT_DIR
 
