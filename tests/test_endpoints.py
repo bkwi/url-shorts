@@ -1,9 +1,25 @@
 import re
+from unittest.mock import patch
 
 
 async def test_healthcheck(client):
     response = await client.get('/health')
     assert response.status == 200
+
+
+async def test_unexpected_exception(client):
+    with patch('shorts.handlers.web.Response') as mocked_response:
+        mocked_response.side_effect = Exception('oops')
+        response = await client.get('/')
+
+    assert response.status == 500
+    assert await response.json() == {'error': 'unexpected error'}
+
+
+async def test_ui(client):
+    response = await client.get('/')
+    assert response.status == 200
+    assert '<title>URL Shorts</title>' in await response.text()
 
 
 async def test_shorten_url(client, test_redis, test_pg):

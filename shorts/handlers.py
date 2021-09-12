@@ -9,6 +9,10 @@ async def healthcheck(request: web.Request) -> web.Response:
     return web.Response(text='OK')
 
 
+async def ui(request: web.Request) -> web.Response:
+    return web.Response(text=request.app['main_html'], content_type='text/html')
+
+
 @schemas.validate(schemas.ShortenRequest)
 async def shorten(request: web.Request) -> web.Response:
     url = request['data'].url

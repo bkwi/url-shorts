@@ -29,6 +29,12 @@ async def http_client(app):
     await app['http'].close()
 
 
+async def main_html(app):
+    with open('/app/shorts/html/index.html') as f:
+        app['main_html'] = f.read()
+    yield
+
+
 async def background_tasks(app):
     loop = asyncio.get_event_loop()
     tasks = [
@@ -51,10 +57,12 @@ async def create_app():
         setup_redis,
         setup_postgres,
         http_client,
+        main_html,
         background_tasks
     ])
 
     app.router.add_routes([
+        web.get('/', handlers.ui),
         web.get('/health', handlers.healthcheck),
         web.get('/s/{short_id}', handlers.resolve),
         web.post('/shorten', handlers.shorten)

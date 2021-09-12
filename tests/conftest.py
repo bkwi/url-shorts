@@ -1,7 +1,6 @@
 import aiopg
 import pytest
 from aioredis import create_redis_pool
-from aioresponses import aioresponses
 
 from shorts import config
 from shorts.app import create_app
@@ -29,12 +28,6 @@ async def test_pg():
     yield postgres
     postgres.close()
     await postgres.wait_closed()
-
-
-@pytest.fixture
-def aiomock():
-    with aioresponses(passthrough=['http://127.0.0.1']) as m:
-        yield m
 
 
 @pytest.fixture()

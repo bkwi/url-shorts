@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>URL Shorts</title>
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    </head>
+    <body>
+        <section id="app" class="section">
+            <div class="container">
+                <div class="columns">
+                    <div class="column is-4">
+                        <input class="input is-primary" type="text"
+                          placeholder="https://very.long.url.here" v-model="longURL">
+                    </div>
+                    <div class="column is-2">
+                        <button class="button is-link" @click="shorten">Shorten!</button>
+                    </div>
+                </div>
+
+                <div class="columns">
+                    <div class="column is-4">
+                        Short url:
+                        <input class="input is-primary" type="text" v-model="shortURL">
+                    </div>
+                </div>
+
+            </div>
+        </section>
+        <script src="//cdn.jsdelivr.net/npm/vue@2"></script>
+        <script src="//cdn.jsdelivr.net/npm/vue-resource@1.5.3"></script>
+        <script>
+            var app = new Vue({
+                el: '#app',
+
+                data: {
+                    longURL: '',
+                    shortURL: ''
+                },
+
+                methods: {
+                    shorten: function() {
+                        console.log(this.longURL);
+                        this.$http.post('/shorten', {url: this.longURL}).then(response => {
+                            this.shortURL = response.body.short_url;
+                        }, response => {
+                            alert(response.body.error);
+                        })
+                    }
+                }
+            })
+        </script>
+    </body>
+</html>
