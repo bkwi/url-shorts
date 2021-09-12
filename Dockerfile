@@ -14,4 +14,4 @@ RUN pip install -r $PROJECT_DIR/requirements.txt
 COPY ./ /app/
 RUN chmod +x /app/run_dev_server.sh
 
-CMD ["/app/run_dev_server.sh"]
+CMD ["/app/run_server.sh"]

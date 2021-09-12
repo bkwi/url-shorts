@@ -11,8 +11,9 @@ services:
       - 8000:8000
     env_file:
       - build/env
-    volumes:
-      - ./:/app/
+    # volumes:
+    #   - ./:/app/
+    # command: /app/run_dev_server.sh
 
   shorts_redis:
     image: redis:6.2.5-alpine
