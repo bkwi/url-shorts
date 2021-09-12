@@ -1,6 +1,7 @@
 import os
 
 SHORT_ID_LENGTH = 7
+CACHE_TTL = 30
 
 REDIS_HOST = os.environ['REDIS_HOST']
 REDIS_PORT = 6379

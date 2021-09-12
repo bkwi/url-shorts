@@ -64,7 +64,7 @@ async def create_app():
     app.router.add_routes([
         web.get('/', handlers.ui),
         web.get('/health', handlers.healthcheck),
-        web.get('/s/{short_id}', handlers.resolve),
+        web.get('/r/{short_id}', handlers.resolve),
         web.post('/shorten', handlers.shorten)
     ])
 

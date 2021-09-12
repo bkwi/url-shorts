@@ -27,7 +27,7 @@ async def test_shorten_url(client, test_redis, test_pg):
     response = await client.post('/shorten', json={'url': long_url})
     assert response.status == 200
     short_url = (await response.json())['short_url']
-    assert re.match(r'http://localhost:8000/s/\w{7}$', short_url)
+    assert re.match(r'http://localhost:8000/r/\w{7}$', short_url)
 
     short_id = short_url.split('/')[-1]
     assert long_url == (await test_redis.get(short_id)).decode()
@@ -43,15 +43,16 @@ async def test_shorten_url(client, test_redis, test_pg):
 
 
 async def test_id_not_found(client):
-    response = await client.get('/s/no-such-id')
+    response = await client.get('/r/no-such-id')
     assert response.status == 404
+    assert 'short id not matched' == await response.text()
 
 
 async def test_id_from_redis(client, test_redis):
     short_id = 'zxc'
     url = 'http://a.com'
     await test_redis.set(short_id, url)
-    response = await client.get(f'/s/{short_id}', allow_redirects=False)
+    response = await client.get(f'/r/{short_id}', allow_redirects=False)
     assert response.status == 302
     assert response.headers['Location'] == url
 
@@ -61,15 +62,13 @@ async def test_id_from_db(client, test_redis, test_pg):
     url = 'http://b.com'
     assert await test_redis.get(short_id) is None
 
-    query = '''
-        INSERT INTO short_urls(short_id, url)
-        VALUES(%(short_id)s, %(url)s)
-    '''
+    query = 'INSERT INTO short_urls(short_id, url) VALUES(%(short_id)s, %(url)s)'
     query_params = {'short_id': short_id, 'url': url}
     async with test_pg.acquire() as conn:
         async with conn.cursor() as cur:
             await cur.execute(query, query_params)
 
-    response = await client.get(f'/s/{short_id}', allow_redirects=False)
+    response = await client.get(f'/r/{short_id}', allow_redirects=False)
     assert response.status == 302
     assert response.headers['Location'] == url
+    assert (await test_redis.get(short_id)).decode() == url

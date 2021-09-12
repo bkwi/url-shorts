@@ -17,7 +17,7 @@ async def ui(request: web.Request) -> web.Response:
 async def shorten(request: web.Request) -> web.Response:
     url = request['data'].url
     short_id = uuid.uuid4().hex[:config.SHORT_ID_LENGTH]
-    await request.app['redis'].setex(short_id, 30, str(url))
+    await request.app['redis'].setex(short_id, config.CACHE_TTL, str(url))
 
     query = 'INSERT INTO short_urls(short_id, url) VALUES(%(short_id)s, %(url)s)'
     query_params = {'short_id': short_id, 'url': url}
@@ -25,7 +25,7 @@ async def shorten(request: web.Request) -> web.Response:
         async with conn.cursor() as cur:
             await cur.execute(query, query_params)
 
-    return web.json_response({'short_url': f'http://localhost:8000/s/{short_id}'})
+    return web.json_response({'short_url': f'http://localhost:8000/r/{short_id}'})
 
 
 async def resolve(request: web.Request) -> web.Response:
@@ -44,4 +44,5 @@ async def resolve(request: web.Request) -> web.Response:
                 else:
                     return web.Response(text='short id not matched', status=404)
 
+    await request.app['redis'].setex(short_id, config.CACHE_TTL, url)
     raise web.HTTPFound(url)

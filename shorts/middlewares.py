@@ -1,3 +1,4 @@
+import re
 import time
 import uuid
 
@@ -30,8 +31,12 @@ async def exception_middleware(request, handler):
 async def metrics_middleware(request, handler):
     request_id = uuid.uuid4().hex[:7]
 
+    req_path = request.path
+    if re.match(r'^\/r\/\w+$', req_path):
+        req_path = '/r'
+
     await metrics.add(
-        metrics.Request(path=request.path, request_id=request_id),
+        metrics.Request(path=req_path, request_id=request_id),
         request.app['redis']
     )
 
@@ -41,7 +46,7 @@ async def metrics_middleware(request, handler):
     await metrics.add(
         metrics.Response(
             status=response.status,
-            request_path=request.path,
+            request_path=req_path,
             request_id=request_id,
             time_used_ms=round((time.time() - t0) * 1000)
         ),
