@@ -26,8 +26,8 @@ async def shorten(request: web.Request) -> web.Response:
         async with conn.cursor() as cur:
             await cur.execute(query, query_params)
 
-    await logger.info(f'Short id {short_id} now stores {url}')
-    return web.json_response({'short_url': f'http://localhost:8000/r/{short_id}'})
+    logger.info(f'Short id {short_id} now stores {url}')
+    return web.json_response({'short_url': f'http://{config.APP_HOSTNAME}/r/{short_id}'})
 
 
 async def resolve(request: web.Request) -> web.Response:

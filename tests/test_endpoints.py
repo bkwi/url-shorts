@@ -37,7 +37,7 @@ async def test_shorten_url(client, test_redis, test_pg):
             await cur.execute('SELECT * FROM short_urls;')
             result = await cur.fetchone()
 
-    _, db_short_id, db_url = result
+    db_short_id, db_url = result
     assert db_short_id == short_id
     assert db_url == long_url
 

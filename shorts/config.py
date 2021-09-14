@@ -1,5 +1,7 @@
 import os
 
+APP_HOSTNAME = os.getenv('APP_HOSTNAME', 'localhost:8000')
+
 SHORT_ID_LENGTH = 7
 CACHE_TTL = 30
 

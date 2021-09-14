@@ -20,7 +20,7 @@ async def exception_middleware(request, handler):
     except exceptions.AppException as e:
         response = web.json_response({'error': e.message}, status=e.status_code)
     except Exception as e:
-        await logger.exception(f'Unexpected error: {e}')
+        logger.exception(f'Unexpected error: {e}')
         response = web.json_response({'error': 'unexpected error'}, status=500)
 
     return response
@@ -33,7 +33,7 @@ async def metrics_middleware(request, handler):
 
     logger.setup(request_id)
     req_path = request.path
-    await logger.info(f'New request received: {request.path}')
+    logger.info(f'New request received: {request.path}')
     if re.match(r'^\/r\/\w+$', req_path):
         req_path = '/r'
 
@@ -44,7 +44,7 @@ async def metrics_middleware(request, handler):
 
     t0 = time.time()
     response = await handler(request)
-    await logger.info(f'Response status code: {response.status}')
+    logger.info(f'Response status code: {response.status}')
 
     await metrics.add(
         metrics.Response(
