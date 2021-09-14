@@ -104,3 +104,22 @@ class Response(BaseModel):
             'status': self.status,
             'path': self.request_path
         }
+
+
+class URLCache(BaseModel):
+    status: str
+    short_id: str
+    request_id: str
+    measurement = 'url_cache'
+    time_str: datetime = Field(default_factory=metric_timestamp)
+
+    @property
+    def fields(self):
+        return {
+            'request_id': self.request_id,
+            'short_id': self.short_id
+        }
+
+    @property
+    def tags(self):
+        return {'status': self.status}

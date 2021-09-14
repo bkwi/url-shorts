@@ -30,6 +30,7 @@ async def exception_middleware(request, handler):
 @web.middleware
 async def metrics_middleware(request, handler):
     request_id = uuid.uuid4().hex[:7]
+    request['id'] = request_id
 
     req_path = request.path
     if re.match(r'^\/r\/\w+$', req_path):

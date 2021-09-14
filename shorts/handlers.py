@@ -2,7 +2,7 @@ import uuid
 
 from aiohttp import web
 
-from shorts import schemas, config
+from shorts import schemas, config, metrics
 
 
 async def healthcheck(request: web.Request) -> web.Response:
@@ -33,8 +33,10 @@ async def resolve(request: web.Request) -> web.Response:
     url = await request.app['redis'].get(short_id)
 
     if url:
+        cache = 'hit'
         url = url.decode()
     else:
+        cache = 'miss'
         query = 'SELECT url FROM short_urls WHERE short_id = %(short_id)s'
         async with request.app['postgres'].acquire() as conn:
             async with conn.cursor() as cur:
@@ -44,5 +46,9 @@ async def resolve(request: web.Request) -> web.Response:
                 else:
                     return web.Response(text='short id not matched', status=404)
 
+    await metrics.add(
+        metrics.URLCache(status=cache, short_id=short_id, request_id=request['id']),
+        request.app['redis']
+    )
     await request.app['redis'].setex(short_id, config.CACHE_TTL, url)
     raise web.HTTPFound(url)
