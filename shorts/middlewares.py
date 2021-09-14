@@ -5,6 +5,7 @@ import uuid
 import pydantic
 from aiohttp import web, web_exceptions
 
+from shorts.loggers import logger
 from shorts import metrics, exceptions
 
 
@@ -18,10 +19,8 @@ async def exception_middleware(request, handler):
         response = web.json_response({'error': str(e)}, status=400)
     except exceptions.AppException as e:
         response = web.json_response({'error': e.message}, status=e.status_code)
-    except web.HTTPFound:
-        raise
     except Exception as e:
-        print('Unexpected exception:', e)
+        await logger.exception(f'Unexpected error: {e}')
         response = web.json_response({'error': 'unexpected error'}, status=500)
 
     return response
@@ -32,7 +31,9 @@ async def metrics_middleware(request, handler):
     request_id = uuid.uuid4().hex[:7]
     request['id'] = request_id
 
+    logger.setup(request_id)
     req_path = request.path
+    await logger.info(f'New request received: {request.path}')
     if re.match(r'^\/r\/\w+$', req_path):
         req_path = '/r'
 
@@ -43,6 +44,7 @@ async def metrics_middleware(request, handler):
 
     t0 = time.time()
     response = await handler(request)
+    await logger.info(f'Response status code: {response.status}')
 
     await metrics.add(
         metrics.Response(

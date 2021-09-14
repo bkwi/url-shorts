@@ -3,6 +3,7 @@ import uuid
 from aiohttp import web
 
 from shorts import schemas, config, metrics
+from shorts.loggers import logger
 
 
 async def healthcheck(request: web.Request) -> web.Response:
@@ -25,6 +26,7 @@ async def shorten(request: web.Request) -> web.Response:
         async with conn.cursor() as cur:
             await cur.execute(query, query_params)
 
+    await logger.info(f'Short id {short_id} now stores {url}')
     return web.json_response({'short_url': f'http://localhost:8000/r/{short_id}'})
 
 
@@ -51,4 +53,4 @@ async def resolve(request: web.Request) -> web.Response:
         request.app['redis']
     )
     await request.app['redis'].setex(short_id, config.CACHE_TTL, url)
-    raise web.HTTPFound(url)
+    return web.Response(status=302, headers={'Location': url})
