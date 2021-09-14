@@ -29,7 +29,7 @@ services:
     env_file:
       - build/env
     volumes:
-      - ./volumes/postgres:/var/lib/postgresql/data
+      - ./data/postgres:/var/lib/postgresql/data
       - ./build/postgres/01-setup.sql:/docker-entrypoint-initdb.d/01-setup.sql:ro
 
   influxdb:
@@ -38,7 +38,7 @@ services:
     networks:
       - shorts
     volumes:
-      - ./volumes/influxdb:/var/lib/influxdb/
+      - ./data/influxdb:/var/lib/influxdb/
       - ./build/influxdb:/docker-entrypoint-initdb.d:ro
 
   grafana:
@@ -51,7 +51,7 @@ services:
     env_file:
       - build/env
     volumes:
-      - ./volumes/grafana:/var/lib/grafana/
+      - ./data/grafana:/var/lib/grafana/
       - ./build/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
       - ./build/grafana/datasource.yml:/etc/grafana/provisioning/datasources/influxdb.yml:ro
 
