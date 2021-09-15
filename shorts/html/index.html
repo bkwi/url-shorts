@@ -39,7 +39,6 @@
 
                 methods: {
                     shorten: function() {
-                        console.log(this.longURL);
                         this.$http.post('/shorten', {url: this.longURL}).then(response => {
                             this.shortURL = response.body.short_url;
                         }, response => {

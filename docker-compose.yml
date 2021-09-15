@@ -5,6 +5,8 @@ services:
   shorts_app:
     image: shorts-main:latest
     container_name: shorts_app
+    build:
+      context: .
     networks:
       - shorts
     ports:
