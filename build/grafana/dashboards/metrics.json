@@ -434,7 +434,7 @@
         "description": null,
         "error": null,
         "hide": 0,
-        "label": "iinterval",
+        "label": "interval",
         "name": "_interval",
         "options": [
           {
