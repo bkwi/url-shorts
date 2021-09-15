@@ -20,9 +20,9 @@
   },
   "editable": true,
   "gnetId": null,
-  "graphTooltip": 1,
+  "graphTooltip": 0,
   "id": 2,
-  "iteration": 1631655938111,
+  "iteration": 1631726256064,
   "links": [],
   "panels": [
     {
@@ -31,28 +31,21 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "shorts_influxdb_datasource",
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short"
-        },
-        "overrides": []
-      },
+      "description": "",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 8,
+        "h": 10,
         "w": 24,
         "x": 0,
         "y": 0
       },
       "hiddenSeries": false,
-      "id": 4,
+      "id": 2,
       "legend": {
         "alignAsTable": true,
-        "avg": true,
+        "avg": false,
         "current": false,
-        "hideEmpty": false,
-        "hideZero": false,
         "max": false,
         "min": false,
         "rightSide": true,
@@ -83,7 +76,7 @@
           "groupBy": [
             {
               "params": [
-                "$interval"
+                "$_interval"
               ],
               "type": "time"
             },
@@ -127,7 +120,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Requests (by path, per $interval)",
+      "title": "Requests (by path, per $_interval)",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -143,7 +136,6 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:168",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -152,7 +144,6 @@
           "show": true
         },
         {
-          "$$hashKey": "object:169",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -172,19 +163,20 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "shorts_influxdb_datasource",
+      "description": "",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 8
+        "y": 10
       },
       "hiddenSeries": false,
-      "id": 2,
+      "id": 4,
       "legend": {
         "alignAsTable": true,
-        "avg": true,
+        "avg": false,
         "current": false,
         "max": false,
         "min": false,
@@ -212,23 +204,17 @@
       "steppedLine": false,
       "targets": [
         {
-          "alias": "Path: [[tag_path]], status: [[tag_status]]",
+          "alias": "Response status: [[tag_status]]",
           "groupBy": [
             {
               "params": [
-                "$interval"
+                "$_interval"
               ],
               "type": "time"
             },
             {
               "params": [
                 "status"
-              ],
-              "type": "tag"
-            },
-            {
-              "params": [
-                "path"
               ],
               "type": "tag"
             },
@@ -266,7 +252,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Responses (by path & status, per $interval)",
+      "title": "Responses (by status code, per $_interval)",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -305,23 +291,17 @@
     },
     {
       "aliasColors": {},
-      "bars": false,
+      "bars": true,
       "dashLength": 10,
       "dashes": false,
       "datasource": "shorts_influxdb_datasource",
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short"
-        },
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 19
       },
       "hiddenSeries": false,
       "id": 6,
@@ -334,7 +314,7 @@
         "total": false,
         "values": false
       },
-      "lines": true,
+      "lines": false,
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
@@ -355,7 +335,7 @@
           "groupBy": [
             {
               "params": [
-                "$interval"
+                "$_interval"
               ],
               "type": "time"
             },
@@ -415,7 +395,6 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:75",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -424,7 +403,6 @@
           "show": true
         },
         {
-          "$$hashKey": "object:76",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -437,53 +415,8 @@
         "align": false,
         "alignLevel": null
       }
-    },
-    {
-      "datasource": "shorts_influxdb_datasource",
-      "gridPos": {
-        "h": 10,
-        "w": 24,
-        "x": 0,
-        "y": 25
-      },
-      "id": 8,
-      "options": {
-        "dedupStrategy": "none",
-        "enableLogDetails": true,
-        "prettifyLogMessage": false,
-        "showCommonLabels": false,
-        "showLabels": false,
-        "showTime": true,
-        "sortOrder": "Descending",
-        "wrapLogMessage": false
-      },
-      "targets": [
-        {
-          "groupBy": [],
-          "hide": false,
-          "measurement": "app_logs",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "message"
-                ],
-                "type": "field"
-              }
-            ]
-          ],
-          "tags": []
-        }
-      ],
-      "title": "Application logs",
-      "type": "logs"
     }
   ],
-  "refresh": "10s",
   "schemaVersion": 30,
   "style": "dark",
   "tags": [],
@@ -492,27 +425,37 @@
       {
         "auto": true,
         "auto_count": 50,
-        "auto_min": "1s",
+        "auto_min": "10s",
         "current": {
           "selected": false,
           "text": "auto",
-          "value": "$__auto_interval_interval"
+          "value": "$__auto_interval__interval"
         },
         "description": null,
         "error": null,
         "hide": 0,
-        "label": "interval",
-        "name": "interval",
+        "label": "iinterval",
+        "name": "_interval",
         "options": [
           {
             "selected": true,
             "text": "auto",
-            "value": "$__auto_interval_interval"
+            "value": "$__auto_interval__interval"
           },
           {
             "selected": false,
-            "text": "1s",
-            "value": "1s"
+            "text": "5s",
+            "value": "5s"
+          },
+          {
+            "selected": false,
+            "text": "10s",
+            "value": "10s"
+          },
+          {
+            "selected": false,
+            "text": "30s",
+            "value": "30s"
           },
           {
             "selected": false,
@@ -521,18 +464,13 @@
           },
           {
             "selected": false,
-            "text": "2m",
-            "value": "2m"
-          },
-          {
-            "selected": false,
             "text": "5m",
             "value": "5m"
           },
           {
             "selected": false,
-            "text": "10m",
-            "value": "10m"
+            "text": "15m",
+            "value": "15m"
           },
           {
             "selected": false,
@@ -546,13 +484,8 @@
           },
           {
             "selected": false,
-            "text": "6h",
-            "value": "6h"
-          },
-          {
-            "selected": false,
-            "text": "12h",
-            "value": "12h"
+            "text": "2h",
+            "value": "2h"
           },
           {
             "selected": false,
@@ -560,7 +493,7 @@
             "value": "1d"
           }
         ],
-        "query": "1s,1m,2m,5m,10m,30m,1h,6h,12h,1d",
+        "query": "5s,10s,30s,1m,5m,15m,30m,1h,2h,1d",
         "queryValue": "",
         "refresh": 2,
         "skipUrlSync": false,
@@ -569,12 +502,12 @@
     ]
   },
   "time": {
-    "from": "now-12h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
-  "title": "URL Shorts",
-  "uid": "eFhtXYI7z",
-  "version": 2
+  "title": "Metrics",
+  "uid": "EUoa6sS7k",
+  "version": 1
 }
